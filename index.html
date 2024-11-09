@@ -8,12 +8,66 @@
 <body>
     <div class="container mt-5">
         <h2>Análisis de Sentencias Previsionales</h2>
+
+        <!-- Formulario para subir el archivo -->
         <form id="uploadForm" enctype="multipart/form-data">
             <input type="file" id="fileInput" accept=".pdf, .docx" required />
             <button type="submit" class="btn btn-primary mt-2">Analizar Sentencia</button>
         </form>
+
+        <!-- Área para mostrar los resultados del análisis -->
         <div id="output" class="mt-4"></div>
+
+        <!-- Botón para cargar los resultados del JSON -->
+        <button id="load-results" class="btn btn-success mt-3">Cargar Resultados</button>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // Función para cargar el archivo JSON desde GitHub
+        async function loadJSON() {
+            try {
+                // Cambia la URL por la del archivo JSON en tu repositorio de GitHub
+                const response = await fetch('https://raw.githubusercontent.com/wilshire1963/analisis-sentencias/main/resultados_analisis.json');
+                const data = await response.json();
+                console.log(data);  // Ver los datos en la consola
+
+                // Mostrar los resultados en la página
+                const output = document.getElementById("output");
+                output.textContent = JSON.stringify(data, null, 2);  // Convertir el JSON a texto legible
+            } catch (error) {
+                console.error('Error al cargar el JSON:', error);
+            }
+        }
+
+        // Vincular la función al botón de carga de resultados
+        document.getElementById('load-results').addEventListener('click', loadJSON);
+
+        // Función para manejar el envío del formulario
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Obtener el archivo seleccionado
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, selecciona un archivo.');
+                return;
+            }
+
+            // Aquí puedes añadir el código para procesar el archivo
+            // Por ejemplo, hacer una solicitud a Google Colab o ejecutar un análisis en el backend
+
+            // Simulación de análisis (esto lo puedes reemplazar con tu lógica)
+            const result = {
+                mensaje: "Análisis completado exitosamente.",
+                archivo: file.name
+            };
+
+            // Mostrar el resultado del análisis en la página
+            const output = document.getElementById('output');
+            output.textContent = JSON.stringify(result, null, 2);  // Convertir el resultado a texto legible
+        });
+    </script>
 </body>
 </html>
