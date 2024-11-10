@@ -1,59 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis de Sentencias</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokenización de Texto</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #resultsContainer {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      width: 100%;
+      height: 400px;
+      overflow-y: scroll;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
-    <h1>Análisis de Sentencias</h1>
 
-    <!-- Botón para cargar PDF -->
-    <input type="file" id="pdfInput">
-    <button id="analyzeButton">Analizar Sentencia</button>
+  <h1>Resultado de la Tokenización</h1>
+  <div id="resultsContainer">Esperando resultados...</div>
 
-    <!-- Contenedor para resultados de análisis -->
-    <h2>Resultados del Análisis</h2>
-    <button id="loadResultsButton">Cargar Resultados</button>
-    <div id="resultsContainer"></div>
-
-    <script>
-        document.getElementById("analyzeButton").addEventListener("click", async () => {
-            const pdfInput = document.getElementById("pdfInput").files[0];
-            if (!pdfInput) {
-                alert("Por favor, selecciona un archivo PDF antes de analizar.");
-                return;
-            }
-
-            // Enviar PDF al servidor para análisis
-            const formData = new FormData();
-            formData.append("pdf", pdfInput);
-
-            
-            const response = await fetch("http://localhost:5000/analyze"), {
-                method: "POST",
-                body: formData,
-            });
-
-            const result = await response.json();
-            alert(result.mensaje || "Análisis completado exitosamente.");
+  <script>
+    // Función para realizar la solicitud de análisis
+    async function analyzeText() {
+      try {
+          const response = await fetch("https://mi-app-heroku.herokuapp.com/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: "Aquí va el texto que deseas analizar" }),
         });
 
-        document.getElementById("loadResultsButton").addEventListener("click", async () => {
-            // Cargar archivo de resultados JSON
-            const response = await fetch("resultados_analisis_bigbird.json");
-            const analysisResults = await response.json();
+        // Asegúrate de que la respuesta sea correcta
+        if (!response.ok) {
+          throw new Error("Error al realizar la solicitud");
+        }
 
-            // Filtrar tokens con LABEL_1
-            const relevantTokens = analysisResults
-                .filter(item => item.label === "LABEL_1")
-                .map(item => item.token)
-                .join(" "); // Unir tokens en una sola cadena de texto
+        // Obtener los datos de la respuesta
+        const analysisResults = await response.json();
 
-            // Mostrar los resultados en el HTML
-            const resultsContainer = document.getElementById("resultsContainer");
-            resultsContainer.innerText = relevantTokens;
-        });
-    </script>
+        // Filtrar tokens con LABEL_1 (o la etiqueta que estés usando)
+        const relevantTokens = analysisResults
+          .filter(item => item.label === "LABEL_1") // Filtrar por la etiqueta que necesitas
+          .map(item => item.token) // Extraer solo los tokens
+          .join(" "); // Unir los tokens con un espacio
+
+        // Limpiar la cadena final (eliminar espacios extras)
+        const cleanedTokens = relevantTokens.replace(/\s{2,}/g, " ").trim();
+
+        // Mostrar el resultado limpio en el contenedor HTML
+        const resultsContainer = document.getElementById("resultsContainer");
+        resultsContainer.innerText = cleanedTokens;
+
+      } catch (error) {
+        console.error("Error al obtener los resultados:", error);
+        const resultsContainer = document.getElementById("resultsContainer");
+        resultsContainer.innerText = "Hubo un error al obtener los resultados.";
+      }
+    }
+
+    // Ejecutar el análisis cuando la página cargue
+    window.onload = analyzeText;
+  </script>
+
 </body>
 </html>
