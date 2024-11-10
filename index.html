@@ -23,18 +23,67 @@
 <body>
 
   <h1>Resultado de la Tokenización</h1>
+  
+  <!-- Formulario para cargar el archivo PDF -->
+  <input type="file" id="fileInput" accept=".pdf" />
+  <button onclick="handleFile()">Cargar y Analizar PDF</button>
+  
   <div id="resultsContainer">Esperando resultados...</div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
   <script>
+    async function handleFile() {
+      const fileInput = document.getElementById("fileInput");
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Por favor, selecciona un archivo PDF.");
+        return;
+      }
+
+      // Leer el archivo PDF y extraer su texto
+      const text = await extractTextFromPDF(file);
+      if (text) {
+        // Enviar el texto extraído a la API para su análisis
+        analyzeText(text);
+      }
+    }
+
+    // Función para extraer el texto del PDF
+    function extractTextFromPDF(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function() {
+          const typedArray = new Uint8Array(reader.result);
+          try {
+            const pdf = await pdfjsLib.getDocument(typedArray).promise;
+            let fullText = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const textContent = await page.getTextContent();
+              fullText += textContent.items.map(item => item.str).join(" ");
+            }
+            resolve(fullText);
+          } catch (error) {
+            reject("Error al extraer texto del PDF: " + error);
+          }
+        };
+        reader.onerror = function() {
+          reject("Error al leer el archivo PDF.");
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
     // Función para realizar la solicitud de análisis
-    async function analyzeText() {
+    async function analyzeText(text) {
       try {
-          const response = await fetch("http://localhost:5000/analyze", {
+        const response = await fetch("http://localhost:5000/analyze", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: "Aquí va el texto que deseas analizar" }),
+          body: JSON.stringify({ text: text }),
         });
 
         // Asegúrate de que la respuesta sea correcta
@@ -65,8 +114,6 @@
       }
     }
 
-    // Ejecutar el análisis cuando la página cargue
-    window.onload = analyzeText;
   </script>
 
 </body>
