@@ -29,7 +29,7 @@
     // Función para realizar la solicitud de análisis
     async function analyzeText() {
       try {
-          const response = await fetch("https://mi-app-heroku.herokuapp.com/analyze", {
+          const response = await fetch("http://localhost:5000/analyze", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
