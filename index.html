@@ -26,8 +26,13 @@
         // Función para cargar el archivo JSON desde GitHub
         async function loadJSON() {
             try {
-                // Cambia la URL por la del archivo JSON en tu repositorio de GitHub
-                const response = await fetch('https://raw.githubusercontent.com/wilshire1963/analisis-sentencias/main/resultados_analisis.json');
+                // URL del archivo resultados_analisis_bigbird.json en tu repositorio
+                const response = await fetch('https://raw.githubusercontent.com/wilshire1963/analisis-sentencias/main/resultados_analisis_bigbird.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
 
                 // Mostrar los resultados en la página
@@ -55,7 +60,7 @@
                 return;
             }
 
-            // Simulación de análisis (esto lo puedes reemplazar con tu lógica de backend o procesamiento en Colab)
+            // Simulación de análisis (esto lo puedes reemplazar con tu lógica)
             const result = {
                 mensaje: "Análisis completado exitosamente.",
                 archivo: file.name
