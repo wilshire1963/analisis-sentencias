@@ -29,13 +29,13 @@
                 // Cambia la URL por la del archivo JSON en tu repositorio de GitHub
                 const response = await fetch('https://raw.githubusercontent.com/wilshire1963/analisis-sentencias/main/resultados_analisis.json');
                 const data = await response.json();
-                console.log(data);  // Ver los datos en la consola
 
                 // Mostrar los resultados en la página
                 const output = document.getElementById("output");
                 output.textContent = JSON.stringify(data, null, 2);  // Convertir el JSON a texto legible
             } catch (error) {
                 console.error('Error al cargar el JSON:', error);
+                alert("Hubo un error al cargar los resultados del análisis.");
             }
         }
 
@@ -55,10 +55,7 @@
                 return;
             }
 
-            // Aquí puedes añadir el código para procesar el archivo
-            // Por ejemplo, hacer una solicitud a Google Colab o ejecutar un análisis en el backend
-
-            // Simulación de análisis (esto lo puedes reemplazar con tu lógica)
+            // Simulación de análisis (esto lo puedes reemplazar con tu lógica de backend o procesamiento en Colab)
             const result = {
                 mensaje: "Análisis completado exitosamente.",
                 archivo: file.name
