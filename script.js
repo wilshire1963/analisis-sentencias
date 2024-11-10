@@ -19,7 +19,7 @@ document.getElementById("uploadForm").addEventListener("submit", function(event)
 // Función para cargar y mostrar el análisis desde el JSON
 async function loadAnalysisResults() {
     try {
-        const response = await fetch('https://raw.githubusercontent.com/wilshire1963/analisis-sentencias/main/resultados_analisis.json');
+        const response = await fetch('https://raw.githubusercontent.com/wilshire1963/analisis-sentencias/main/resultados_analisis_bigbird.json');
         const data = await response.json();
 
         // Mostrar los resultados en formato legible
